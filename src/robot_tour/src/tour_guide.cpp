@@ -23,14 +23,6 @@ public:
   explicit WaypointFollowerClient(const rclcpp::NodeOptions & options)
   : Node("waypoint_action_client", options)
   {
-    geometry_msgs::msg::PoseStamped x;
-    x.header.frame_id = "map";
-    x.pose.position.x=1.3623204231262207;
-    x.pose.position.y=-1.4709776639938354;
-    this->poses_.push_back(x);
-    x.pose.position.x=-0.6929791569709778;
-    x.pose.position.y=1.9281070232391357;
-    this->poses_.push_back(x);
     sub_node_tour = rclcpp::Node::make_shared("subservient_tour_node");
     this->client_ptr_ = rclcpp_action::create_client<Waypoints>(
       this,
@@ -39,9 +31,7 @@ public:
       "tour_command", 10, std::bind(&WaypointFollowerClient::topic_callback, this, std::placeholders::_1));
     this->tour_service_client_ = sub_node_tour->create_client<social_robot_interfaces::srv::Tours>("tour_retrieve");
     
-    // this->timer_ = this->create_wall_timer(
-    //   std::chrono::milliseconds(500),
-    //   std::bind(&WaypointFollowerClient::send_goal, this, _1));
+  
   }
 
   void send_goal(std::vector<geometry_msgs::msg::PoseStamped> poses)
@@ -73,7 +63,6 @@ private:
   rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
   rclcpp_action::Client<Waypoints>::SharedPtr client_ptr_;
   rclcpp::TimerBase::SharedPtr timer_;
-  std::vector<geometry_msgs::msg::PoseStamped> poses_;
   std::shared_ptr<rclcpp::Node> sub_node_tour;
   rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedPtr tour_service_client_;
 
@@ -91,11 +80,7 @@ private:
     GoalHandleWaypoints::SharedPtr,
     const std::shared_ptr<const Waypoints::Feedback> feedback)
   {
-    // std::stringstream ss;
-    // ss << "Next number in sequence received: ";
-    // for (auto number : feedback->partial_sequence) {
-    //   ss << number << " ";
-    // }
+
     RCLCPP_INFO(this->get_logger(), "The current goal is %d", feedback->current_waypoint);
   }
 
@@ -114,11 +99,7 @@ private:
         RCLCPP_ERROR(this->get_logger(), "Unknown result code");
         return;
     }
-    // std::stringstream ss;
-    // ss << "Result received: ";
-    // for (auto number : result.result->sequence) {
-    //   ss << number << " ";
-    // }
+
     for (long unsigned int i=0;i<size(result.result->missed_waypoints);i++)
     {
     RCLCPP_INFO(this->get_logger(), "Missed %u \n", result.result->missed_waypoints[i]);
