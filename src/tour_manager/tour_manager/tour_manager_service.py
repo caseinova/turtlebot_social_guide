@@ -22,12 +22,15 @@ class TourManager(Node):
         tour_obj = self.retrieve_tour(request.idx)
         # print(tour_obj)
         # self.get_logger().info('Incoming request: retrieving tour number %d',request.idx)
-        waypoint = PoseStamped()
-        waypoint.header.frame_id = "map"
+        
         list_=[]
+        k=0
         # print(len(tour_obj))
         # print(tour_obj)
         for i in tour_obj:
+            k+=1
+            waypoint = PoseStamped()
+            waypoint.header.frame_id = "map"
             waypoint.pose.position.x = i[0]
             waypoint.pose.position.y = i[1]
             waypoint.pose.position.z = i[2]
@@ -36,7 +39,8 @@ class TourManager(Node):
             waypoint.pose.orientation.z = i[5]
             waypoint.pose.orientation.w = i[6]
             list_.append(waypoint)
-        # print(list_)
+            print(f'goal {k} is {i[0]}, {i[1]}')
+        print(list_)
         response.tour=list_
         return response
     

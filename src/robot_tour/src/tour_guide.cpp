@@ -10,6 +10,7 @@
 #include "rclcpp_components/register_node_macro.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "social_robot_interfaces/srv/tours.hpp"
 
 namespace robot_tour
 {
@@ -30,11 +31,13 @@ public:
     x.pose.position.x=-0.6929791569709778;
     x.pose.position.y=1.9281070232391357;
     this->poses_.push_back(x);
+    sub_node_tour = rclcpp::Node::make_shared("subservient_tour_node");
     this->client_ptr_ = rclcpp_action::create_client<Waypoints>(
       this,
       "/follow_waypoints");
     subscription_ = this->create_subscription<std_msgs::msg::String>(
       "tour_command", 10, std::bind(&WaypointFollowerClient::topic_callback, this, std::placeholders::_1));
+    this->tour_service_client_ = sub_node_tour->create_client<social_robot_interfaces::srv::Tours>("tour_retrieve");
     
     // this->timer_ = this->create_wall_timer(
     //   std::chrono::milliseconds(500),
@@ -45,7 +48,6 @@ public:
   {
     using namespace std::placeholders;
 
-    // this->timer_->cancel();
 
     if (!this->client_ptr_->wait_for_action_server()) {
       RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
@@ -72,6 +74,8 @@ private:
   rclcpp_action::Client<Waypoints>::SharedPtr client_ptr_;
   rclcpp::TimerBase::SharedPtr timer_;
   std::vector<geometry_msgs::msg::PoseStamped> poses_;
+  std::shared_ptr<rclcpp::Node> sub_node_tour;
+  rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedPtr tour_service_client_;
 
   void goal_response_callback(std::shared_ptr<GoalHandleWaypoints> future)
   {
@@ -124,7 +128,28 @@ private:
   void topic_callback(const std_msgs::msg::String::SharedPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "received %s", msg->data.c_str());
-    this->send_goal(this->poses_);
+    auto request = std::make_shared<social_robot_interfaces::srv::Tours::Request>();
+    request->idx = 0;
+
+    while (!this->tour_service_client_->wait_for_service(std::chrono::seconds(1))) {
+      if (!rclcpp::ok()) {
+        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
+        return;
+      }
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service not available, waiting again...");
+    }
+
+    auto result = this->tour_service_client_->async_send_request(request);
+
+    if (rclcpp::spin_until_future_complete(this->sub_node_tour, result) ==
+      rclcpp::FutureReturnCode::SUCCESS)
+    {
+      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Success");
+    } else {
+      RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed");
+    }
+    
+    this->send_goal(result.get()->tour);
     RCLCPP_INFO(this->get_logger(), "goal sent");
   }
 };  // class FibonacciActionClient

@@ -12,12 +12,13 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
+find_package(social_robot_interfaces REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 
 add_library(tour_guide SHARED src/tour_guide.cpp)
-ament_target_dependencies(tour_guide rclcpp rclcpp_action rclcpp_components nav2_msgs geometry_msgs)
+ament_target_dependencies(tour_guide rclcpp rclcpp_action rclcpp_components nav2_msgs geometry_msgs social_robot_interfaces)
 
 rclcpp_components_register_node(tour_guide PLUGIN "robot_tour::WaypointFollowerClient" EXECUTABLE tour_guide_start)
 install(TARGETS
