@@ -14,5 +14,10 @@ def generate_launch_description():
             namespace='',
             executable='tour_saver',
             name='tour_saver'
+        ),
+        Node(
+            package='robot_tour',
+            namespace='robot_tour',
+            executable='tour_guide_start',
         )
     ])
