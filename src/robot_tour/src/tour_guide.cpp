@@ -104,7 +104,7 @@ private:
     {
     RCLCPP_INFO(this->get_logger(), "Missed %u \n", result.result->missed_waypoints[i]);
     }
-    rclcpp::shutdown();
+    // rclcpp::shutdown();
   }
   void topic_callback(const std_msgs::msg::String::SharedPtr msg)
   {
