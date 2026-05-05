@@ -52,7 +52,7 @@ protected:
   int waypoint_pause_duration_{0};
   bool is_enabled_{true};
   std::string talk_topic_{"/talk_command"};
-  std::string default_message_{"Arrived at waypoint"};
+  std::string default_message_{"Arrived at waypoint "};
   std::vector<std::string> waypoint_messages_;
   rclcpp::Logger logger_{rclcpp::get_logger("robot_tour")};
   rclcpp::Clock::SharedPtr clock_;

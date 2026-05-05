@@ -89,7 +89,7 @@ bool TalkAtWaypoint::processAtWaypoint(
   {
     msg.data = waypoint_messages_[curr_waypoint_index];
   } else {
-    msg.data = default_message_;
+    msg.data = default_message_ + std::to_string(curr_waypoint_index);
   }
 
   publisher_->publish(msg);
