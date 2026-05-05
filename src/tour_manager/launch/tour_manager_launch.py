@@ -19,5 +19,10 @@ def generate_launch_description():
             package='robot_tour',
             namespace='',
             executable='tour_guide_start',
+        ),
+        Node(
+            package='speech_locomotion_interface',
+            namespace='',
+            executable='listening',
         )
     ])
