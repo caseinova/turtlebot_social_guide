@@ -4,6 +4,7 @@ from rclpy.task import Future
 from geometry_msgs.msg import  PoseStamped
 from std_msgs.msg import String
 from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult
+from social_robot_interfaces.msg import TspCommand
 from social_robot_interfaces.srv import Tours
 from json import dumps, loads
 
@@ -14,6 +15,7 @@ class NavigationSpeech(Node):
         super().__init__('speech_listener')
         self.subscriber_ = self.create_subscription(String, '/speech/intent',self.intent_callback_,10)
         self.start_tour_ = self.create_publisher(String, '/tour_command',10)
+        self.tsp_command_ = self.create_publisher(TspCommand, '/tsp_command', 10)
         self.nav = BasicNavigator()
         self.subscriber_
         self.current_goal = PoseStamped()
@@ -46,6 +48,15 @@ class NavigationSpeech(Node):
         elif (data["intent"]=="start_tour"):
             self.get_logger().info('Starting tour')
             self.start_tour_.publish(String(data="start"))
+        elif (data["intent"]=="tsp"):
+            try:
+                waypoints = [int(waypoint) for waypoint in data["waypoints"]]
+            except (KeyError, TypeError, ValueError):
+                self.get_logger().info('Could not parse TSP waypoints, ignoring')
+                return
+
+            self.get_logger().info('Starting TSP tour')
+            self.tsp_command_.publish(TspCommand(waypoints=waypoints))
         elif (data['intent']=='stop_navigation'):
             self.get_logger().info('Stopping navigation')
             self.nav.cancelTask()

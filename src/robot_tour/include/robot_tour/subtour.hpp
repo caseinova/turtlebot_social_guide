@@ -1,6 +1,7 @@
 #ifndef ROBOT_TOUR__SUBTOUR_HPP_
 #define ROBOT_TOUR__SUBTOUR_HPP_
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <vector>
@@ -10,6 +11,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "social_robot_interfaces/msg/tsp_command.hpp"
+#include "social_robot_interfaces/srv/tours.hpp"
 
 namespace robot_tour
 {
@@ -34,6 +36,9 @@ namespace robot_tour
 
         private:
         void tspCommandCallback(const social_robot_interfaces::msg::TspCommand::SharedPtr msg);
+        void tourResponseCallback(
+            const std::vector<int64_t> & waypoint_indices,
+            rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedFuture future);
         std::vector<geometry_msgs::msg::PoseStamped> solveTour(
             const std::vector<geometry_msgs::msg::PoseStamped> & poses,
             int max_iterations);
@@ -46,6 +51,7 @@ namespace robot_tour
 
         rclcpp::Subscription<social_robot_interfaces::msg::TspCommand>::SharedPtr tsp_subscription_;
         rclcpp_action::Client<Waypoints>::SharedPtr waypoint_client_;
+        rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedPtr tour_service_client_;
         int max_2opt_iterations_ = 1000;
 
         std::vector<std::vector<float>> cost_matrix;

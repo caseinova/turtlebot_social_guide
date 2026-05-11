@@ -21,6 +21,7 @@ SubtourNode::SubtourNode(const rclcpp::NodeOptions & options)
   max_2opt_iterations_ = this->declare_parameter<int>("max_2opt_iterations", 1000);
 
   waypoint_client_ = rclcpp_action::create_client<Waypoints>(this, action_name);
+  tour_service_client_ = this->create_client<social_robot_interfaces::srv::Tours>("tour_retrieve");
   tsp_subscription_ = this->create_subscription<social_robot_interfaces::msg::TspCommand>(
     command_topic,
     rclcpp::SystemDefaultsQoS(),
@@ -173,16 +174,62 @@ std::vector<geometry_msgs::msg::PoseStamped> SubtourNode::solveTour(
 
 void SubtourNode::tspCommandCallback(const social_robot_interfaces::msg::TspCommand::SharedPtr msg)
 {
-  if (msg->poses.empty()) {
+  if (msg->waypoints.empty()) {
     RCLCPP_WARN(this->get_logger(), "Received an empty TSP command; ignoring it");
     return;
   }
 
-  auto ordered_poses = solveTour(msg->poses, max_2opt_iterations_);
+  using namespace std::chrono_literals;
+
+  if (!tour_service_client_->wait_for_service(1s)) {
+    RCLCPP_ERROR(this->get_logger(), "tour_retrieve service is not available");
+    return;
+  }
+
+  auto request = std::make_shared<social_robot_interfaces::srv::Tours::Request>();
+  request->idx = 0;
+
+  auto waypoint_indices = msg->waypoints;
+  tour_service_client_->async_send_request(
+    request,
+    [this, waypoint_indices](
+      rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedFuture future) {
+      this->tourResponseCallback(waypoint_indices, future);
+    });
+}
+
+void SubtourNode::tourResponseCallback(
+  const std::vector<int64_t> & waypoint_indices,
+  rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedFuture future)
+{
+  const auto response = future.get();
+
+  std::vector<geometry_msgs::msg::PoseStamped> selected_poses;
+  selected_poses.reserve(waypoint_indices.size());
+
+  for (const auto waypoint_idx : waypoint_indices) {
+    if (waypoint_idx < 0 || static_cast<std::size_t>(waypoint_idx) >= response->tour.size()) {
+      RCLCPP_WARN(
+        this->get_logger(),
+        "Ignoring waypoint index %ld; tour only has %zu waypoints",
+        static_cast<long>(waypoint_idx),
+        response->tour.size());
+      continue;
+    }
+
+    selected_poses.push_back(response->tour[static_cast<std::size_t>(waypoint_idx)]);
+  }
+
+  if (selected_poses.empty()) {
+    RCLCPP_WARN(this->get_logger(), "No valid TSP waypoints found; ignoring command");
+    return;
+  }
+
+  auto ordered_poses = solveTour(selected_poses, max_2opt_iterations_);
 
   RCLCPP_INFO(
     this->get_logger(),
-    "Optimized %zu waypoints; final path length is %.3f m",
+    "Optimized %zu selected waypoints; final path length is %.3f m",
     ordered_poses.size(),
     computeTourCost());
 
