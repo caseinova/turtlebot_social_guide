@@ -18,10 +18,15 @@ SubtourNode::SubtourNode(const rclcpp::NodeOptions & options)
 {
   const auto command_topic = this->declare_parameter<std::string>("command_topic", "/tsp_command");
   const auto action_name = this->declare_parameter<std::string>("action_name", "/follow_waypoints");
+  const auto current_pose_topic = this->declare_parameter<std::string>("current_pose_topic", "/amcl_pose");
   max_2opt_iterations_ = this->declare_parameter<int>("max_2opt_iterations", 1000);
 
   waypoint_client_ = rclcpp_action::create_client<Waypoints>(this, action_name);
   tour_service_client_ = this->create_client<social_robot_interfaces::srv::Tours>("tour_retrieve");
+  current_pose_subscription_ = this->create_subscription<geometry_msgs::msg::PoseWithCovarianceStamped>(
+    current_pose_topic,
+    rclcpp::SystemDefaultsQoS(),
+    std::bind(&SubtourNode::currentPoseCallback, this, std::placeholders::_1));
   tsp_subscription_ = this->create_subscription<social_robot_interfaces::msg::TspCommand>(
     command_topic,
     rclcpp::SystemDefaultsQoS(),
@@ -78,7 +83,7 @@ float SubtourNode::getCost(int x, int y)
   return cost_matrix.at(x).at(y);
 }
 
-bool SubtourNode::initializeTour()
+bool SubtourNode::initializeTour(int start_node_idx)
 {
   current_tour.clear();
 
@@ -86,11 +91,18 @@ bool SubtourNode::initializeTour()
     return false;
   }
 
-  std::vector<int> unvisited_nodes(num_nodes - 1);
-  std::iota(unvisited_nodes.begin(), unvisited_nodes.end(), 1);
+  if (start_node_idx < 0 || start_node_idx >= num_nodes) {
+    start_node_idx = 0;
+  }
 
-  current_tour.push_back(0);
-  auto current_node = 0;
+  std::vector<int> unvisited_nodes(num_nodes);
+  std::iota(unvisited_nodes.begin(), unvisited_nodes.end(), 0);
+  unvisited_nodes.erase(
+    std::remove(unvisited_nodes.begin(), unvisited_nodes.end(), start_node_idx),
+    unvisited_nodes.end());
+
+  current_tour.push_back(start_node_idx);
+  auto current_node = start_node_idx;
 
   while (!unvisited_nodes.empty()) {
     const auto next_node = getClosestNodeIdx(current_node, unvisited_nodes);
@@ -106,6 +118,26 @@ bool SubtourNode::initializeTour()
   }
 
   return true;
+}
+
+int SubtourNode::getStartNodeIdx(const std::vector<geometry_msgs::msg::PoseStamped> & poses)
+{
+  if (!has_current_pose_ || poses.empty()) {
+    return 0;
+  }
+
+  auto min_cost = large_number;
+  auto min_idx = 0;
+
+  for (std::size_t i = 0; i < poses.size(); ++i) {
+    const auto cost = computeCost(current_pose_, poses[i]);
+    if (cost < min_cost) {
+      min_cost = cost;
+      min_idx = static_cast<int>(i);
+    }
+  }
+
+  return min_idx;
 }
 
 float SubtourNode::computeTourCost()
@@ -160,7 +192,7 @@ std::vector<geometry_msgs::msg::PoseStamped> SubtourNode::solveTour(
   int max_iterations)
 {
   makeCostMatrix(poses);
-  initializeTour();
+  initializeTour(getStartNodeIdx(poses));
   improveTour(max_iterations);
 
   std::vector<geometry_msgs::msg::PoseStamped> ordered_poses;
@@ -170,6 +202,13 @@ std::vector<geometry_msgs::msg::PoseStamped> SubtourNode::solveTour(
   }
 
   return ordered_poses;
+}
+
+void SubtourNode::currentPoseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg)
+{
+  current_pose_.header = msg->header;
+  current_pose_.pose = msg->pose.pose;
+  has_current_pose_ = true;
 }
 
 void SubtourNode::tspCommandCallback(const social_robot_interfaces::msg::TspCommand::SharedPtr msg)

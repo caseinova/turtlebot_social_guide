@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "geometry_msgs/msg/pose_with_covariance_stamped.hpp"
 #include "geometry_msgs/msg/pose_stamped.hpp"
 #include "nav2_msgs/action/follow_waypoints.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -30,15 +31,17 @@ namespace robot_tour
         float getCost(int, int);
         int getClosestNodeIdx(int, const std::vector<int> &);
         bool makeCostMatrix(const std::vector<geometry_msgs::msg::PoseStamped> &);
-        bool initializeTour(void);
+        bool initializeTour(int start_node_idx);
         float computeTourCost(void);
         bool improveTour(int);
 
         private:
         void tspCommandCallback(const social_robot_interfaces::msg::TspCommand::SharedPtr msg);
+        void currentPoseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg);
         void tourResponseCallback(
             const std::vector<int64_t> & waypoint_indices,
             rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedFuture future);
+        int getStartNodeIdx(const std::vector<geometry_msgs::msg::PoseStamped> & poses);
         std::vector<geometry_msgs::msg::PoseStamped> solveTour(
             const std::vector<geometry_msgs::msg::PoseStamped> & poses,
             int max_iterations);
@@ -50,9 +53,12 @@ namespace robot_tour
         void resultCallback(const GoalHandleWaypoints::WrappedResult & result);
 
         rclcpp::Subscription<social_robot_interfaces::msg::TspCommand>::SharedPtr tsp_subscription_;
+        rclcpp::Subscription<geometry_msgs::msg::PoseWithCovarianceStamped>::SharedPtr current_pose_subscription_;
         rclcpp_action::Client<Waypoints>::SharedPtr waypoint_client_;
         rclcpp::Client<social_robot_interfaces::srv::Tours>::SharedPtr tour_service_client_;
         int max_2opt_iterations_ = 1000;
+        bool has_current_pose_ = false;
+        geometry_msgs::msg::PoseStamped current_pose_;
 
         std::vector<std::vector<float>> cost_matrix;
         std::vector<int> current_tour;
