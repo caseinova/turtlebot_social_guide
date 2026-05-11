@@ -16,6 +16,7 @@ class NavigationSpeech(Node):
         self.subscriber_ = self.create_subscription(String, '/speech/intent',self.intent_callback_,10)
         self.start_tour_ = self.create_publisher(String, '/tour_command',10)
         self.tsp_command_ = self.create_publisher(TspCommand, '/tsp_command', 10)
+        self.dock_command_ = self.create_publisher(String, '/dock_command', 10)
         self.nav = BasicNavigator()
         self.subscriber_
         self.current_goal = PoseStamped()
@@ -57,6 +58,9 @@ class NavigationSpeech(Node):
 
             self.get_logger().info('Starting TSP tour')
             self.tsp_command_.publish(TspCommand(waypoints=waypoints))
+        elif (data["intent"]=="dock"):
+            self.get_logger().info('Docking')
+            self.dock_command_.publish(String(data="dock"))
         elif (data['intent']=='stop_navigation'):
             self.get_logger().info('Stopping navigation')
             self.nav.cancelTask()
