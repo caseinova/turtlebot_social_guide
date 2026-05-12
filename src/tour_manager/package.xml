@@ -18,6 +18,8 @@
   <exec_depend>robot_tour</exec_depend>
   <exec_depend>ros2launch</exec_depend>
   <exec_depend>speech_locomotion_interface</exec_depend>
+  <exec_depend>turtlebot3_gazebo</exec_depend>
+  <exec_depend>turtlebot3_navigation2</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
