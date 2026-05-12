@@ -363,6 +363,12 @@ include("/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/ament_cma
 # install("TARGETS" "dynamixel_sdk_custom_interfaces__rosidl_typesupport_c__pyext" "DESTINATION" "local/lib/python3.10/dist-packages/dynamixel_sdk_custom_interfaces")
 include("/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/ament_cmake_symlink_install_targets_2_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
+# install(FILES "/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/ament_cmake_index/share/ament_index/resource_index/rust_packages/dynamixel_sdk_custom_interfaces" "DESTINATION" "share/ament_index/resource_index/rust_packages")
+ament_cmake_symlink_install_files("/home/tom/turtlebot3_ws/src/DynamixelSDK/ros/dynamixel_sdk_custom_interfaces" FILES "/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/ament_cmake_index/share/ament_index/resource_index/rust_packages/dynamixel_sdk_custom_interfaces" "DESTINATION" "share/ament_index/resource_index/rust_packages")
+
+# install(DIRECTORY "/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/rosidl_generator_rs/dynamixel_sdk_custom_interfaces/rust" "DESTINATION" "share/dynamixel_sdk_custom_interfaces")
+ament_cmake_symlink_install_directory("/home/tom/turtlebot3_ws/src/DynamixelSDK/ros/dynamixel_sdk_custom_interfaces" DIRECTORY "/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/rosidl_generator_rs/dynamixel_sdk_custom_interfaces/rust" "DESTINATION" "share/dynamixel_sdk_custom_interfaces")
+
 # install(FILES "/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/rosidl_adapter/dynamixel_sdk_custom_interfaces/msg/SetPosition.idl" "DESTINATION" "share/dynamixel_sdk_custom_interfaces/msg")
 ament_cmake_symlink_install_files("/home/tom/turtlebot3_ws/src/DynamixelSDK/ros/dynamixel_sdk_custom_interfaces" FILES "/home/tom/turtlebot3_ws/build/dynamixel_sdk_custom_interfaces/rosidl_adapter/dynamixel_sdk_custom_interfaces/msg/SetPosition.idl" "DESTINATION" "share/dynamixel_sdk_custom_interfaces/msg")
 

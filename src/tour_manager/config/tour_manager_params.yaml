@@ -1,0 +1,22 @@
+tour_manager:
+  ros__parameters: {}
+
+tour_saver:
+  ros__parameters: {}
+
+tour_guide:
+  ros__parameters: {}
+
+subtour:
+  ros__parameters:
+    command_topic: /tsp_command
+    action_name: /follow_waypoints
+    current_pose_topic: /amcl_pose
+    max_2opt_iterations: 5000
+
+dock_listener:
+  ros__parameters:
+    database_path: docks.db
+
+speech_listener:
+  ros__parameters: {}

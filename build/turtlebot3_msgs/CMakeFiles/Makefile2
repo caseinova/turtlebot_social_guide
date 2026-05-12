@@ -77,10 +77,12 @@ all: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/all
 all: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_c__pyext.dir/all
 all: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c__pyext.dir/all
 all: turtlebot3_msgs__py/all
+all: turtlebot3_msgs__rs/all
 .PHONY : all
 
 # The main recursive "preinstall" target.
 preinstall: turtlebot3_msgs__py/preinstall
+preinstall: turtlebot3_msgs__rs/preinstall
 .PHONY : preinstall
 
 # The main recursive "clean" target.
@@ -102,6 +104,7 @@ clean: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/clea
 clean: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_c__pyext.dir/clean
 clean: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c__pyext.dir/clean
 clean: turtlebot3_msgs__py/clean
+clean: turtlebot3_msgs__rs/clean
 .PHONY : clean
 
 #=============================================================================
@@ -118,6 +121,21 @@ turtlebot3_msgs__py/preinstall:
 # Recursive "clean" directory target.
 turtlebot3_msgs__py/clean: turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/clean
 .PHONY : turtlebot3_msgs__py/clean
+
+#=============================================================================
+# Directory level rules for directory turtlebot3_msgs__rs
+
+# Recursive "all" directory target.
+turtlebot3_msgs__rs/all: turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/all
+.PHONY : turtlebot3_msgs__rs/all
+
+# Recursive "preinstall" directory target.
+turtlebot3_msgs__rs/preinstall:
+.PHONY : turtlebot3_msgs__rs/preinstall
+
+# Recursive "clean" directory target.
+turtlebot3_msgs__rs/clean: turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/clean
+.PHONY : turtlebot3_msgs__rs/clean
 
 #=============================================================================
 # Target rules for target CMakeFiles/uninstall.dir
@@ -183,6 +201,7 @@ CMakeFiles/turtlebot3_msgs.dir/all: CMakeFiles/turtlebot3_msgs__rosidl_typesuppo
 CMakeFiles/turtlebot3_msgs.dir/all: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c.dir/all
 CMakeFiles/turtlebot3_msgs.dir/all: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_cpp.dir/all
 CMakeFiles/turtlebot3_msgs.dir/all: CMakeFiles/turtlebot3_msgs__rosidl_typesupport_cpp.dir/all
+CMakeFiles/turtlebot3_msgs.dir/all: turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/turtlebot3_msgs.dir/build.make CMakeFiles/turtlebot3_msgs.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/turtlebot3_msgs.dir/build.make CMakeFiles/turtlebot3_msgs.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles --progress-num= "Built target turtlebot3_msgs"
@@ -190,7 +209,7 @@ CMakeFiles/turtlebot3_msgs.dir/all: CMakeFiles/turtlebot3_msgs__rosidl_typesuppo
 
 # Build rule for subdir invocation for target.
 CMakeFiles/turtlebot3_msgs.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 64
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 65
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/turtlebot3_msgs.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
 .PHONY : CMakeFiles/turtlebot3_msgs.dir/rule
@@ -478,7 +497,7 @@ CMakeFiles/turtlebot3_msgs__rosidl_generator_py.dir/all: turtlebot3_msgs__py/CMa
 
 # Build rule for subdir invocation for target.
 CMakeFiles/turtlebot3_msgs__rosidl_generator_py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 73
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 74
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/turtlebot3_msgs__rosidl_generator_py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
 .PHONY : CMakeFiles/turtlebot3_msgs__rosidl_generator_py.dir/rule
@@ -508,7 +527,7 @@ CMakeFiles/turtlebot3_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/all: turtle
 
 # Build rule for subdir invocation for target.
 CMakeFiles/turtlebot3_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 75
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 76
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/turtlebot3_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
 .PHONY : CMakeFiles/turtlebot3_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rule
@@ -538,7 +557,7 @@ CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_c__pyext.dir/all: t
 
 # Build rule for subdir invocation for target.
 CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_c__pyext.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 75
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 76
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_c__pyext.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
 .PHONY : CMakeFiles/turtlebot3_msgs__rosidl_typesupport_introspection_c__pyext.dir/rule
@@ -567,7 +586,7 @@ CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c__pyext.dir/all: turtlebot3_msgs
 
 # Build rule for subdir invocation for target.
 CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c__pyext.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 75
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 76
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c__pyext.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
 .PHONY : CMakeFiles/turtlebot3_msgs__rosidl_typesupport_c__pyext.dir/rule
@@ -593,7 +612,7 @@ turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/all: CMakeFiles/turtlebot
 
 # Build rule for subdir invocation for target.
 turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 65
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 66
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
 .PHONY : turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/rule
@@ -606,6 +625,32 @@ turtlebot3_msgs__py: turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/rule
 turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/clean:
 	$(MAKE) $(MAKESILENT) -f turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/build.make turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/clean
 .PHONY : turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/clean
+
+#=============================================================================
+# Target rules for target turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir
+
+# All Build rule for target.
+turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/all:
+	$(MAKE) $(MAKESILENT) -f turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/build.make turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/depend
+	$(MAKE) $(MAKESILENT) -f turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/build.make turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/build
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles --progress-num=80 "Built target turtlebot3_msgs__rs"
+.PHONY : turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/all
+
+# Build rule for subdir invocation for target.
+turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/rule: cmake_check_build_system
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 1
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/all
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/tom/turtlebot3_ws/build/turtlebot3_msgs/CMakeFiles 0
+.PHONY : turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/rule
+
+# Convenience name for target.
+turtlebot3_msgs__rs: turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/rule
+.PHONY : turtlebot3_msgs__rs
+
+# clean rule for target.
+turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/clean:
+	$(MAKE) $(MAKESILENT) -f turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/build.make turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/clean
+.PHONY : turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/clean
 
 #=============================================================================
 # Special targets to cleanup operation of make.

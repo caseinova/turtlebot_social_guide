@@ -405,6 +405,19 @@ turtlebot3_msgs__py/fast:
 	$(MAKE) $(MAKESILENT) -f turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/build.make turtlebot3_msgs__py/CMakeFiles/turtlebot3_msgs__py.dir/build
 .PHONY : turtlebot3_msgs__py/fast
 
+#=============================================================================
+# Target rules for targets named turtlebot3_msgs__rs
+
+# Build rule for target.
+turtlebot3_msgs__rs: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 turtlebot3_msgs__rs
+.PHONY : turtlebot3_msgs__rs
+
+# fast build rule for target.
+turtlebot3_msgs__rs/fast:
+	$(MAKE) $(MAKESILENT) -f turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/build.make turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir/build
+.PHONY : turtlebot3_msgs__rs/fast
+
 rosidl_generator_c/turtlebot3_msgs/action/detail/patrol__functions.o: rosidl_generator_c/turtlebot3_msgs/action/detail/patrol__functions.c.o
 .PHONY : rosidl_generator_c/turtlebot3_msgs/action/detail/patrol__functions.o
 
@@ -1839,6 +1852,7 @@ help:
 	@echo "... turtlebot3_msgs"
 	@echo "... turtlebot3_msgs__cpp"
 	@echo "... turtlebot3_msgs__py"
+	@echo "... turtlebot3_msgs__rs"
 	@echo "... turtlebot3_msgs_uninstall"
 	@echo "... uninstall"
 	@echo "... turtlebot3_msgs__rosidl_generator_c"

@@ -30,3 +30,11 @@
 /home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__py/CMakeFiles/install.dir
 /home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__py/CMakeFiles/install/local.dir
 /home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__py/CMakeFiles/install/strip.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/turtlebot3_msgs__rs.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/test.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/edit_cache.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/rebuild_cache.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/list_install_components.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/install.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/install/local.dir
+/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/CMakeFiles/install/strip.dir

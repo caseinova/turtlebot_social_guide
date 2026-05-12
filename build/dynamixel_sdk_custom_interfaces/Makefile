@@ -405,6 +405,19 @@ dynamixel_sdk_custom_interfaces__py/fast:
 	$(MAKE) $(MAKESILENT) -f dynamixel_sdk_custom_interfaces__py/CMakeFiles/dynamixel_sdk_custom_interfaces__py.dir/build.make dynamixel_sdk_custom_interfaces__py/CMakeFiles/dynamixel_sdk_custom_interfaces__py.dir/build
 .PHONY : dynamixel_sdk_custom_interfaces__py/fast
 
+#=============================================================================
+# Target rules for targets named dynamixel_sdk_custom_interfaces__rs
+
+# Build rule for target.
+dynamixel_sdk_custom_interfaces__rs: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 dynamixel_sdk_custom_interfaces__rs
+.PHONY : dynamixel_sdk_custom_interfaces__rs
+
+# fast build rule for target.
+dynamixel_sdk_custom_interfaces__rs/fast:
+	$(MAKE) $(MAKESILENT) -f dynamixel_sdk_custom_interfaces__rs/CMakeFiles/dynamixel_sdk_custom_interfaces__rs.dir/build.make dynamixel_sdk_custom_interfaces__rs/CMakeFiles/dynamixel_sdk_custom_interfaces__rs.dir/build
+.PHONY : dynamixel_sdk_custom_interfaces__rs/fast
+
 rosidl_generator_c/dynamixel_sdk_custom_interfaces/msg/detail/set_position__functions.o: rosidl_generator_c/dynamixel_sdk_custom_interfaces/msg/detail/set_position__functions.c.o
 .PHONY : rosidl_generator_c/dynamixel_sdk_custom_interfaces/msg/detail/set_position__functions.o
 
@@ -879,6 +892,7 @@ help:
 	@echo "... dynamixel_sdk_custom_interfaces"
 	@echo "... dynamixel_sdk_custom_interfaces__cpp"
 	@echo "... dynamixel_sdk_custom_interfaces__py"
+	@echo "... dynamixel_sdk_custom_interfaces__rs"
 	@echo "... dynamixel_sdk_custom_interfaces_uninstall"
 	@echo "... uninstall"
 	@echo "... dynamixel_sdk_custom_interfaces__rosidl_generator_c"

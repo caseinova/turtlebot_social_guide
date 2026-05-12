@@ -1,12 +1,10 @@
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/launch/navigation2.launch.py
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map.pgm
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map.yaml
+/home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_1.pgm
+/home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_1.yaml
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_2.pgm
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_2.yaml
-/home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_w.pgm
-/home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_w.yaml
-/home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_x.pgm
-/home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/map/map_x.yaml
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/param/burger.yaml
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/param/burger_cam.yaml
 /home/tom/turtlebot3_ws/install/turtlebot3_navigation2/share/turtlebot3_navigation2/param/humble/burger.yaml

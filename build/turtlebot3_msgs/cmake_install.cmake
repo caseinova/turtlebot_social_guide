@@ -409,6 +409,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__py/cmake_install.cmake")
+  include("/home/tom/turtlebot3_ws/build/turtlebot3_msgs/turtlebot3_msgs__rs/cmake_install.cmake")
 
 endif()
 

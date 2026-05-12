@@ -363,6 +363,12 @@ include("/home/tom/turtlebot3_ws/build/turtlebot3_msgs/ament_cmake_symlink_insta
 # install("TARGETS" "turtlebot3_msgs__rosidl_typesupport_c__pyext" "DESTINATION" "local/lib/python3.10/dist-packages/turtlebot3_msgs")
 include("/home/tom/turtlebot3_ws/build/turtlebot3_msgs/ament_cmake_symlink_install_targets_2_${CMAKE_INSTALL_CONFIG_NAME}.cmake")
 
+# install(FILES "/home/tom/turtlebot3_ws/build/turtlebot3_msgs/ament_cmake_index/share/ament_index/resource_index/rust_packages/turtlebot3_msgs" "DESTINATION" "share/ament_index/resource_index/rust_packages")
+ament_cmake_symlink_install_files("/home/tom/turtlebot3_ws/src/turtlebot3_msgs" FILES "/home/tom/turtlebot3_ws/build/turtlebot3_msgs/ament_cmake_index/share/ament_index/resource_index/rust_packages/turtlebot3_msgs" "DESTINATION" "share/ament_index/resource_index/rust_packages")
+
+# install(DIRECTORY "/home/tom/turtlebot3_ws/build/turtlebot3_msgs/rosidl_generator_rs/turtlebot3_msgs/rust" "DESTINATION" "share/turtlebot3_msgs")
+ament_cmake_symlink_install_directory("/home/tom/turtlebot3_ws/src/turtlebot3_msgs" DIRECTORY "/home/tom/turtlebot3_ws/build/turtlebot3_msgs/rosidl_generator_rs/turtlebot3_msgs/rust" "DESTINATION" "share/turtlebot3_msgs")
+
 # install(FILES "/home/tom/turtlebot3_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs/msg/SensorState.idl" "DESTINATION" "share/turtlebot3_msgs/msg")
 ament_cmake_symlink_install_files("/home/tom/turtlebot3_ws/src/turtlebot3_msgs" FILES "/home/tom/turtlebot3_ws/build/turtlebot3_msgs/rosidl_adapter/turtlebot3_msgs/msg/SensorState.idl" "DESTINATION" "share/turtlebot3_msgs/msg")
 
