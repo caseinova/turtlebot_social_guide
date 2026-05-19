@@ -12,7 +12,7 @@ subtour:
     command_topic: /tsp_command
     action_name: /follow_waypoints
     current_pose_topic: /amcl_pose
-    max_2opt_iterations: 5000
+    max_2opt_iterations: 10000
 
 dock_listener:
   ros__parameters:
