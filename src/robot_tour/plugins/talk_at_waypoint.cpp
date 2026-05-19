@@ -49,13 +49,15 @@ void TalkAtWaypoint::initialize(
     node, plugin_name + ".default_message", rclcpp::ParameterValue(default_message_));
   nav2_util::declare_parameter_if_not_declared(
     node, plugin_name + ".waypoint_messages", rclcpp::ParameterValue(std::vector<std::string>{}));
+  nav2_util::declare_parameter_if_not_declared(
+    node, plugin_name + ".max_wait_duration", rclcpp::ParameterValue(30000));
 
   node->get_parameter(plugin_name + ".enabled", is_enabled_);
   node->get_parameter(plugin_name + ".waypoint_pause_duration", waypoint_pause_duration_);
   node->get_parameter(plugin_name + ".talk_topic", talk_topic_);
   node->get_parameter(plugin_name + ".default_message", default_message_);
   node->get_parameter(plugin_name + ".waypoint_messages", waypoint_messages_);
-
+  node->get_parameter(plugin_name + ".max_wait_duration", max_wait_duration_);
   if (waypoint_pause_duration_ < 0) {
     RCLCPP_WARN(
       logger_,
@@ -64,6 +66,7 @@ void TalkAtWaypoint::initialize(
   }
 
   publisher_ = node->create_publisher<std_msgs::msg::String>(talk_topic_, rclcpp::SystemDefaultsQoS());
+  done_talking_subscription_ = node->create_subscription<std_msgs::msg::String>("/done_talking", rclcpp::SystemDefaultsQoS(),std::bind(&TalkAtWaypoint::done_talking_callback_, this, std::placeholders::_1));
 
   RCLCPP_INFO(
     logger_,
@@ -71,6 +74,12 @@ void TalkAtWaypoint::initialize(
     is_enabled_ ? "true" : "false",
     talk_topic_.c_str(),
     waypoint_pause_duration_);
+}
+
+void TalkAtWaypoint::done_talking_callback_(const std_msgs::msg::String::ConstSharedPtr & msg)
+{
+  RCLCPP_INFO(logger_, "Received done talking signal: '%s'", msg->data.c_str());
+  done_talking_flag_ = true;
 }
 
 bool TalkAtWaypoint::processAtWaypoint(
@@ -93,15 +102,33 @@ bool TalkAtWaypoint::processAtWaypoint(
   }
 
   publisher_->publish(msg);
+
+  done_talking_flag_ = false;
+  int wait_count_ = 0;
+
   RCLCPP_INFO(
     logger_,
     "Arrived at waypoint %d, published talk command: '%s'",
     curr_waypoint_index,
     msg.data.c_str());
-
-  if (waypoint_pause_duration_ > 0) {
-    clock_->sleep_for(std::chrono::milliseconds(waypoint_pause_duration_));
+  
+  while (wait_count_<=max_wait_duration_/waypoint_pause_duration_)
+  {
+      if (waypoint_pause_duration_ > 0) {
+      clock_->sleep_for(std::chrono::milliseconds(waypoint_pause_duration_));
+    }
+    else {
+      clock_->sleep_for(std::chrono::milliseconds(1000));
+    }
+    if(done_talking_flag_) {
+      break;
+    }
+    wait_count_++;
   }
+  RCLCPP_INFO(
+      logger_,
+      "Received done talking signal for waypoint %d, resuming navigation",
+      curr_waypoint_index);
 
   return true;
 }
