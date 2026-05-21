@@ -1,4 +1,4 @@
-from social_robot_interfaces.srv import Tours
+from social_robot_interfaces.srv import Tours, Description
 
 from geometry_msgs.msg import PoseStamped
 from std_msgs.msg import String
@@ -15,6 +15,7 @@ class TourManager(Node):
         self.declare_parameter('tour_description_default', 'No description provided')
         self.default_description_ = self.get_parameter('tour_description_default').get_parameter_value().string_value
         self.srv = self.create_service(Tours, 'tour_retrieve', self.tour_retrieve_callback)
+        self.get_description_ = self.create_service(Description, 'retrieve_description', self.retrieve_description_callback)
         self.subscription_ = self.create_subscription(PoseStamped,'save_tour',self.save_tour_callback,10)
         self.con = sqlite3.connect("tours.db")
         cur = self.con.cursor()
@@ -44,6 +45,17 @@ class TourManager(Node):
             print(f'goal {k} is {i[0]}, {i[1]}')
         print(list_)
         response.tour=list_
+        return response
+    
+    def retrieve_description_callback(self, request, response):
+        tour_obj = self.retrieve_tour(0)
+        description_list = [i[7] for i in tour_obj]
+        try:
+            description = description_list[request.idx]
+            response.description = String(data=description)
+        except (ValueError, IndexError):
+            response.description = String(data="Invalid tour index")
+        
         return response
     
     def save_tour_callback(self, msg):
