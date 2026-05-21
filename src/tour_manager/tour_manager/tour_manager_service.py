@@ -12,11 +12,13 @@ class TourManager(Node):
     def __init__(self):
         super().__init__('tour_manager')
         self.get_logger().info('Initializing tour manager')
+        self.declare_parameter('tour_description_default', 'No description provided')
+        self.default_description_ = self.get_parameter('tour_description_default').get_parameter_value().string_value
         self.srv = self.create_service(Tours, 'tour_retrieve', self.tour_retrieve_callback)
         self.subscription_ = self.create_subscription(PoseStamped,'save_tour',self.save_tour_callback,10)
         self.con = sqlite3.connect("tours.db")
         cur = self.con.cursor()
-        cur.execute("CREATE TABLE IF NOT EXISTS tours (px,py,pz,qx,qy,qz,qw)")
+        cur.execute("CREATE TABLE IF NOT EXISTS tours (px,py,pz,qx,qy,qz,qw,description)")
 
     def tour_retrieve_callback(self, request, response):
         tour_obj = self.retrieve_tour(request.idx)
@@ -49,7 +51,7 @@ class TourManager(Node):
     
     def add_point(self, x: PoseStamped):
         cur = self.con.cursor()
-        cur.execute("INSERT INTO tours VALUES (?,?,?,?,?,?,?)", (x.pose.position.x,x.pose.position.y,x.pose.position.z,x.pose.orientation.x,x.pose.orientation.y,x.pose.orientation.z,x.pose.orientation.w,))
+        cur.execute("INSERT INTO tours VALUES (?,?,?,?,?,?,?,?)", (x.pose.position.x,x.pose.position.y,x.pose.position.z,x.pose.orientation.x,x.pose.orientation.y,x.pose.orientation.z,x.pose.orientation.w,self.default_description_))
         self.con.commit()
         self.get_logger().info('Saved 1 new waypoint into tour')
 
