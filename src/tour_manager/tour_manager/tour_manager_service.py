@@ -20,6 +20,11 @@ class TourManager(Node):
         self.con = sqlite3.connect("tours.db")
         cur = self.con.cursor()
         cur.execute("CREATE TABLE IF NOT EXISTS tours (px,py,pz,qx,qy,qz,qw,description)")
+        columns = [column[1] for column in cur.execute("PRAGMA table_info(tours)").fetchall()]
+        if 'description' not in columns:
+            cur.execute("ALTER TABLE tours ADD COLUMN description TEXT")
+            cur.execute("UPDATE tours SET description = ? WHERE description IS NULL", (self.default_description_,))
+            self.con.commit()
 
     def tour_retrieve_callback(self, request, response):
         tour_obj = self.retrieve_tour(request.idx)
@@ -49,11 +54,14 @@ class TourManager(Node):
     
     def retrieve_description_callback(self, request, response):
         tour_obj = self.retrieve_tour(0)
-        description_list = [i[7] for i in tour_obj]
         try:
-            description = description_list[request.idx]
+            if request.idx < 0:
+                raise IndexError
+            description = tour_obj[request.idx][7]
+            if description is None:
+                description = self.default_description_
             response.description = String(data=description)
-        except (ValueError, IndexError):
+        except (IndexError, TypeError):
             response.description = String(data="Invalid tour index")
         
         return response
@@ -63,7 +71,9 @@ class TourManager(Node):
     
     def add_point(self, x: PoseStamped):
         cur = self.con.cursor()
-        cur.execute("INSERT INTO tours VALUES (?,?,?,?,?,?,?,?)", (x.pose.position.x,x.pose.position.y,x.pose.position.z,x.pose.orientation.x,x.pose.orientation.y,x.pose.orientation.z,x.pose.orientation.w,self.default_description_))
+        cur.execute(
+            "INSERT INTO tours (px,py,pz,qx,qy,qz,qw,description) VALUES (?,?,?,?,?,?,?,?)",
+            (x.pose.position.x,x.pose.position.y,x.pose.position.z,x.pose.orientation.x,x.pose.orientation.y,x.pose.orientation.z,x.pose.orientation.w,self.default_description_))
         self.con.commit()
         self.get_logger().info('Saved 1 new waypoint into tour')
 
