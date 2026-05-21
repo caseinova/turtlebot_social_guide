@@ -20,7 +20,12 @@ def package_files(directory):
 data_files = [
     ('share/ament_index/resource_index/packages', [os.path.join('resource', package_name)]),
     (os.path.join('share', package_name), ['package.xml']),
-    (os.path.join('share', package_name, 'launch'), ['bootup.launch.py']),
+    (os.path.join('share', package_name, 'launch'), [
+        'bootup.launch.py',
+        'move_pepper.launch.py',
+        'gesture_manager.launch.py',
+        'pepper_real.launch.py',
+    ]),
 ]
 data_files.extend(package_files('tablet_assets'))
 data_files.extend(package_files('audio'))
