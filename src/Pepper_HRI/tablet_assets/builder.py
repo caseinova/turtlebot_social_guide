@@ -10,6 +10,7 @@ import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from social_robot_interfaces.msg import TspCommand
+from social_robot_interfaces.srv import Description, Tours
 from ament_index_python.packages import PackageNotFoundError, get_package_share_directory
 
 PACKAGE_NAME = 'pepper_hri'
@@ -43,6 +44,8 @@ class TabletBuilderNode(Node):
             TspCommand,
             '/tsp_command',
             10)
+        self.tour_retrieve_client = self.create_client(Tours, 'tour_retrieve')
+        self.retrieve_description_client = self.create_client(Description, 'retrieve_description')
 
         self.get_logger().info("Tablet Builder Node is ready.")
 
@@ -155,6 +158,55 @@ class TabletBuilderNode(Node):
 
         return waypoints
 
+    def call_service(self, client, service_name, request, timeout_sec=2.0):
+        if not client.wait_for_service(timeout_sec=timeout_sec):
+            raise RuntimeError(f"Service '{service_name}' is not available")
+
+        event = threading.Event()
+        future = client.call_async(request)
+        future.add_done_callback(lambda _: event.set())
+
+        if not event.wait(timeout_sec):
+            raise RuntimeError(f"Timed out waiting for service '{service_name}'")
+
+        result = future.result()
+        if result is None:
+            raise RuntimeError(f"Service '{service_name}' returned no result")
+
+        return result
+
+    def get_waypoint_description(self, waypoint_idx):
+        request = Description.Request()
+        request.idx = waypoint_idx
+        response = self.call_service(
+            self.retrieve_description_client,
+            'retrieve_description',
+            request)
+        return response.description.data
+
+    def get_available_waypoints(self):
+        request = Tours.Request()
+        request.idx = 0
+        response = self.call_service(
+            self.tour_retrieve_client,
+            'tour_retrieve',
+            request)
+
+        waypoints = []
+        for waypoint_idx, _ in enumerate(response.tour):
+            raw_description = self.get_waypoint_description(waypoint_idx)
+            name, separator, description = raw_description.partition('|')
+            name = name.strip()
+            description = description.strip() if separator else ''
+
+            waypoints.append({
+                'idx': waypoint_idx,
+                'name': name or f'Waypoint {waypoint_idx + 1}',
+                'description': description,
+            })
+
+        return waypoints
+
 
 # Global server loop runner function (cleanly isolated from Node class scopes)
 def start_server(node):
@@ -165,6 +217,22 @@ def start_server(node):
 
     # Define custom request handler class inline to access the 'node' reference directly
     class ROSRequestHandler(http.server.SimpleHTTPRequestHandler):
+        def send_json(self, status_code, payload):
+            self.send_response(status_code)
+            self.send_header('Content-Type', 'application/json')
+            self.end_headers()
+            self.wfile.write(json.dumps(payload).encode('utf-8'))
+
+        def do_GET(self):
+            if self.path == '/tour_waypoints':
+                try:
+                    self.send_json(200, {'waypoints': node.get_available_waypoints()})
+                except Exception as e:
+                    node.get_logger().error(f"Failed to retrieve tour waypoints: {str(e)}")
+                    self.send_json(500, {'error': str(e)})
+            else:
+                super().do_GET()
+
         def do_POST(self):
             if self.path == '/tour_retrieve':
                 content_length = int(self.headers['Content-Length'])
@@ -178,21 +246,16 @@ def start_server(node):
                     msg.waypoints = waypoints
                     node.tsp_command_publisher.publish(msg)
                     node.get_logger().info(f"Published TSP command to /tsp_command: {waypoints}")
-                    
-                    self.send_response(200)
-                    self.send_header('Content-Type', 'application/json')
-                    self.end_headers()
-                    response = {
+
+                    self.send_json(200, {
                         "status": "published",
                         "topic": "/tsp_command",
                         "waypoints": waypoints
-                    }
-                    self.wfile.write(json.dumps(response).encode('utf-8'))
+                    })
                     
                 except Exception as e:
                     node.get_logger().error(f"Failed to parse POST data: {str(e)}")
-                    self.send_response(400)
-                    self.end_headers()
+                    self.send_json(400, {'error': str(e)})
             else:
                 self.send_response(404)
                 self.end_headers()

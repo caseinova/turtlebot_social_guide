@@ -36,6 +36,7 @@
             background: #2a2a2a;
             border: 3px solid #444;
             border-radius: 16px;
+            min-height: 180px;
             padding: 20px;
             display: flex;
             flex-direction: column;
@@ -47,18 +48,20 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        .tour-btn img {
-            width: 100%;
-            max-height: 140px;
-            object-fit: cover;
-            border-radius: 8px;
-            pointer-events: none; /* Stops image dragging behavior on tablets */
-        }
-
         .tour-btn span {
             font-size: 24px;
             font-weight: bold;
             color: white;
+            text-align: center;
+        }
+
+        .tour-btn small {
+            color: #b5b5b5;
+            font-size: 16px;
+            line-height: 1.35;
+            max-height: 66px;
+            overflow: hidden;
+            text-align: center;
         }
 
         /* Selected State */
@@ -102,37 +105,24 @@
             color: #888;
             cursor: not-allowed;
         }
+
+        .menu-status {
+            color: #cfcfcf;
+            font-size: 28px;
+            grid-column: 1 / -1;
+            min-height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div class="menu-container">
-        <div class="n-grid">
-            <button class="tour-btn" onclick="selectTour('artifact_2')">
-                <img src="tablet_assets/exhibition_images/combination_vault/cryptex.jpg"" alt="Artifact 2">
-                <span>Combination Vault</span>
-            </button>
-            <button class="tour-btn" onclick="selectTour('artifact_3')">
-                <img src="tablet_assets/exhibition_images/LED_crystal/LED_crystal.webp" alt="Artifact 3">
-                <span>LED Crystal</span>
-            </button>
-            <button class="tour-btn" onclick="selectTour('artifact_4')">
-                <img src="tablet_assets/exhibition_images/double_pendulum/double_pendulum.gif" alt="Artifact 4">
-                <span>Double Pendulum</span>
-            </button>
-            <button class="tour-btn" onclick="selectTour('artifact_5')">
-                <img src="tablet_assets/exhibition_images/crane/crane.jpg" alt="Artifact 5">
-                <span>Crane</span>
-            </button>
-
-            <button class="tour-btn pos-5" onclick="selectTour('artifact_1')">
-                <img src="tablet_assets/exhibition_images/walking_robot/walking_robot.gif" alt="Artifact 1">
-                <span>Walking Robot</span>
-            </button>
-            <button class="tour-btn pos-6" onclick="selectTour('artifact_6')">
-                <img src="tablet_assets/exhibition_images/articulated_lamp/articulated_lamp.gif" alt="Artifact 6">
-                <span>Articulated Lamp</span>
-            </button>
+        <div class="n-grid" id="tourGrid">
+            <div class="menu-status">Loading tour waypoints...</div>
         </div>
 
         <div class="footer-panel">
@@ -140,34 +130,72 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4.9/lib/eventemitter2.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
-
     <script>
-        // Change from a single string to an Array
-        // 1. Establish direct WebSocket connection to Pepper's ROS Bridge
-        // (Replace 'localhost' with Pepper's real IP address if running externally)
-        const ros = new ROSLIB.Ros({
-            url: 'ws://localhost:9090' 
-        });
-
-        ros.on('connection', () => console.log('Successfully connected to ROS Bridge.'));
-        ros.on('error', (error) => console.error('Error connecting to ROS Bridge: ', error));
-        ros.on('close', () => console.log('Connection to ROS Bridge closed.'));
-
-        // 2. Define the target ROS Topic
-        // Adjust messageType to match whatever your subscriber expects (e.g., std_msgs/String)
-        const tourTopic = new ROSLIB.Topic({
-            ros: ros,
-            name: '/tour_retrieve',
-            messageType: 'std_msgs/String'
-        });
-
-
         let selectedArtifacts = []; 
 
-        function selectTour(artifactId) {
-            const clickedBtn = event.currentTarget;
+        function setConfirmButtonState() {
+            const confirmBtn = document.getElementById('confirmBtn');
+            if (selectedArtifacts.length > 0) {
+                confirmBtn.removeAttribute('disabled');
+            } else {
+                confirmBtn.setAttribute('disabled', 'true');
+            }
+        }
+
+        function renderWaypoints(waypoints) {
+            const grid = document.getElementById('tourGrid');
+            grid.innerHTML = '';
+            selectedArtifacts = [];
+            setConfirmButtonState();
+
+            if (waypoints.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'menu-status';
+                emptyState.textContent = 'No tour waypoints available';
+                grid.appendChild(emptyState);
+                return;
+            }
+
+            waypoints.forEach((waypoint, index) => {
+                const button = document.createElement('button');
+                button.className = 'tour-btn';
+                if (index === 4) button.classList.add('pos-5');
+                if (index === 5) button.classList.add('pos-6');
+                button.onclick = () => selectTour(waypoint.idx, button);
+
+                const name = document.createElement('span');
+                name.textContent = waypoint.name;
+                button.appendChild(name);
+
+                if (waypoint.description) {
+                    const description = document.createElement('small');
+                    description.textContent = waypoint.description;
+                    button.appendChild(description);
+                }
+
+                grid.appendChild(button);
+            });
+        }
+
+        async function loadWaypoints() {
+            try {
+                const response = await fetch('/tour_waypoints', { cache: "no-store" });
+                if (!response.ok) throw new Error(await response.text());
+
+                const data = await response.json();
+                renderWaypoints(data.waypoints || []);
+            } catch (error) {
+                const grid = document.getElementById('tourGrid');
+                grid.innerHTML = '';
+                const errorState = document.createElement('div');
+                errorState.className = 'menu-status';
+                errorState.textContent = 'Could not load tour waypoints';
+                grid.appendChild(errorState);
+                console.error("Failed to load tour waypoints", error);
+            }
+        }
+
+        function selectTour(artifactId, clickedBtn) {
             const index = selectedArtifacts.indexOf(artifactId);
 
             if (index > -1) {
@@ -180,19 +208,13 @@
                 clickedBtn.classList.add('selected');
             }
 
-            // Enable the confirm button only if at least one item is chosen
-            const confirmBtn = document.getElementById('confirmBtn');
-            if (selectedArtifacts.length > 0) {
-                confirmBtn.removeAttribute('disabled');
-            } else {
-                confirmBtn.setAttribute('disabled', 'true');
-            }
+            setConfirmButtonState();
         }
 
         async function sendToRobot() {
             if (selectedArtifacts.length === 0) return;
 
-            const payload = { commands: selectedArtifacts };
+            const payload = { waypoints: selectedArtifacts };
 
             try {
                 const response = await fetch('/tour_retrieve', {
@@ -203,8 +225,6 @@
 
                 if (response.ok) {
                     console.log("Dispatched array to /tour_retrieve:", selectedArtifacts);
-                    // REMOVED: window.location.href = 'index.html';
-                    // Instead, maybe clear selections or show a "Sent!" message
                     alert("Tour sent to Pepper!"); 
                 }
             } catch (error) {
@@ -234,6 +254,7 @@
         }
 
         // 2. Check every 300ms so the tablet feels highly responsive to Pepper's triggers
+        loadWaypoints();
         setInterval(watchForExternalCommands, 300);
     </script>
 </body>
