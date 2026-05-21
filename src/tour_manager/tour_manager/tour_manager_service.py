@@ -12,7 +12,7 @@ class TourManager(Node):
     def __init__(self):
         super().__init__('tour_manager')
         self.get_logger().info('Initializing tour manager')
-        self.declare_parameter('tour_description_default', 'No description provided')
+        self.declare_parameter('tour_description_default', 'Placeholder name |No description provided')
         self.default_description_ = self.get_parameter('tour_description_default').get_parameter_value().string_value
         self.srv = self.create_service(Tours, 'tour_retrieve', self.tour_retrieve_callback)
         self.get_description_ = self.create_service(Description, 'retrieve_description', self.retrieve_description_callback)
