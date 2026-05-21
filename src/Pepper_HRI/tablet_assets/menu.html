@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #1a1a1a;
+            color: white;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            width: 100vw;
+            box-sizing: border-box;
+            padding: 40px;
+        }
+
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        /* The 4-column grid that forms the "n" shape */
+        .n-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 25px;
+        }
+
+        /* Base button styling holding image + text */
+        .tour-btn {
+            background: #2a2a2a;
+            border: 3px solid #444;
+            border-radius: 16px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .tour-btn img {
+            width: 100%;
+            max-height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            pointer-events: none; /* Stops image dragging behavior on tablets */
+        }
+
+        .tour-btn span {
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        /* Selected State */
+        .tour-btn.selected {
+            border-color: #00d4ff;
+            background: rgba(0, 212, 255, 0.1);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        /* Positioning the lower legs of the "n" */
+        .pos-5 { grid-column: 1; } /* Row 2, Left leg */
+        .pos-6 { grid-column: 4; } /* Row 2, Right leg */
+
+        /* The massive Confirm Button container */
+        .footer-panel {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+
+        .confirm-btn {
+            width: 50%;
+            background: #00b0ff;
+            color: white;
+            border: none;
+            padding: 20px 0;
+            font-size: 32px;
+            font-weight: bold;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .confirm-btn:active {
+            transform: scale(0.98);
+            background: #0088cc;
+        }
+
+        .confirm-btn:disabled {
+            background: #444;
+            color: #888;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="menu-container">
+        <div class="n-grid">
+            <button class="tour-btn" onclick="selectTour('artifact_2')">
+                <img src="tablet_assets/exhibition_images/combination_vault/cryptex.jpg"" alt="Artifact 2">
+                <span>Combination Vault</span>
+            </button>
+            <button class="tour-btn" onclick="selectTour('artifact_3')">
+                <img src="tablet_assets/exhibition_images/LED_crystal/LED_crystal.webp" alt="Artifact 3">
+                <span>LED Crystal</span>
+            </button>
+            <button class="tour-btn" onclick="selectTour('artifact_4')">
+                <img src="tablet_assets/exhibition_images/double_pendulum/double_pendulum.gif" alt="Artifact 4">
+                <span>Double Pendulum</span>
+            </button>
+            <button class="tour-btn" onclick="selectTour('artifact_5')">
+                <img src="tablet_assets/exhibition_images/crane/crane.jpg" alt="Artifact 5">
+                <span>Crane</span>
+            </button>
+
+            <button class="tour-btn pos-5" onclick="selectTour('artifact_1')">
+                <img src="tablet_assets/exhibition_images/walking_robot/walking_robot.gif" alt="Artifact 1">
+                <span>Walking Robot</span>
+            </button>
+            <button class="tour-btn pos-6" onclick="selectTour('artifact_6')">
+                <img src="tablet_assets/exhibition_images/articulated_lamp/articulated_lamp.gif" alt="Artifact 6">
+                <span>Articulated Lamp</span>
+            </button>
+        </div>
+
+        <div class="footer-panel">
+            <button class="confirm-btn" id="confirmBtn" disabled onclick="sendToRobot()">Confirm Tour</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/eventemitter2@6.4.9/lib/eventemitter2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+
+    <script>
+        // Change from a single string to an Array
+        // 1. Establish direct WebSocket connection to Pepper's ROS Bridge
+        // (Replace 'localhost' with Pepper's real IP address if running externally)
+        const ros = new ROSLIB.Ros({
+            url: 'ws://localhost:9090' 
+        });
+
+        ros.on('connection', () => console.log('Successfully connected to ROS Bridge.'));
+        ros.on('error', (error) => console.error('Error connecting to ROS Bridge: ', error));
+        ros.on('close', () => console.log('Connection to ROS Bridge closed.'));
+
+        // 2. Define the target ROS Topic
+        // Adjust messageType to match whatever your subscriber expects (e.g., std_msgs/String)
+        const tourTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/tour_retrieve',
+            messageType: 'std_msgs/String'
+        });
+
+
+        let selectedArtifacts = []; 
+
+        function selectTour(artifactId) {
+            const clickedBtn = event.currentTarget;
+            const index = selectedArtifacts.indexOf(artifactId);
+
+            if (index > -1) {
+                // Already selected? Remove it from the list and turn off CSS styling
+                selectedArtifacts.splice(index, 1);
+                clickedBtn.classList.remove('selected');
+            } else {
+                // Not selected? Add it to the list and turn on CSS styling
+                selectedArtifacts.push(artifactId);
+                clickedBtn.classList.add('selected');
+            }
+
+            // Enable the confirm button only if at least one item is chosen
+            const confirmBtn = document.getElementById('confirmBtn');
+            if (selectedArtifacts.length > 0) {
+                confirmBtn.removeAttribute('disabled');
+            } else {
+                confirmBtn.setAttribute('disabled', 'true');
+            }
+        }
+
+        async function sendToRobot() {
+            if (selectedArtifacts.length === 0) return;
+
+            const payload = { commands: selectedArtifacts };
+
+            try {
+                const response = await fetch('/tour_retrieve', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    console.log("Dispatched array to /tour_retrieve:", selectedArtifacts);
+                    // REMOVED: window.location.href = 'index.html';
+                    // Instead, maybe clear selections or show a "Sent!" message
+                    alert("Tour sent to Pepper!"); 
+                }
+            } catch (error) {
+                console.error("Failed to call /tour_retrieve", error);
+            }
+        }
+
+        let currentCommand = null;
+
+        // 1. Monitor the JSON state file for changes sent by the ROS node
+        async function watchForExternalCommands() {
+            try {
+                const response = await fetch('current_state.json', { cache: "no-store" });
+                const data = await response.json();
+                
+                if (currentCommand === null) {
+                    // First time loading the menu? Lock in the active command
+                    currentCommand = data.command;
+                } else if (data.command !== currentCommand) {
+                    // A new command came from ROS! Take the user out of the menu and back to index.html
+                    console.log("External command detected: " + data.command);
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                // Fail silently if the JSON isn't generated yet
+            }
+        }
+
+        // 2. Check every 300ms so the tablet feels highly responsive to Pepper's triggers
+        setInterval(watchForExternalCommands, 300);
+    </script>
+</body>
+</html>
